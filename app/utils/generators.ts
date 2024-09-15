@@ -31,21 +31,6 @@ const hexToRgb = (hex: string): string => {
   return `rgb(${parseInt(RgbHex[0], 16)}, ${parseInt(RgbHex[1], 16)}, ${parseInt(RgbHex[2], 16)})`
 }
 
-// const = (rr: any) => {
-//   let shuffled = [], left = randomNumber(0,arr.length - 1), right = left + 1
-//   while(left >= 0 || right < arr.length){
-//     if(left >= 0){
-//       shuffled.push(arr[left])
-//       left--
-//     }
-//     if(right < arr.length){
-//       shuffled.push(arr[right])
-//       right++
-//     }
-//   }
-//   return shuffled
-// }
-
 export const generateBase = () => {
   const hsl = [randomNumber(0, 360), randomNumber(20, 80), randomNumber(20, 80)]
   const name = hslToName(hsl)
@@ -59,7 +44,7 @@ export const generateBase = () => {
   }
 }
 
-const monoChromatic = (base: Color, count: number, current: Colors = []): ColorsObject => {
+const monoChromatic = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
   const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
   while(count < updated.length){
     updated.pop()
@@ -81,45 +66,81 @@ const monoChromatic = (base: Color, count: number, current: Colors = []): Colors
     })
   }
   
-  console.log(updated)
   return {
     count,
     base,
-    scheme: 'Monochromatic',
+    scheme,
     colors: updated,
   }
 }
 
-const analogous = (base: any, count: any) => {
-  let i = 0, j = 0, arr = [], piv = [...base], shift = [0,-35,-70,35,70]
-  
-  while(i < count){
+const analogous = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+  const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl], shift = [0,-35,-70,35,70]
+  while(count < updated.length){
+    updated.pop()
+  }
+  let adj = 0
+  while(updated.length < count){
+    if(adj > 4) adj = 0
     let s = randomNumber(-20,-1), l = randomNumber(-20,-1)
     piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
     piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
-    if(j >= 5) j = 0
-    arr.push([piv[0] + shift[j] < 0 ? piv[0] - shift[j] + 360 : piv[0] + shift[j] > 359 ? piv[0] + shift[j] - 360 : piv[0] + shift[j], piv[1], piv[2]])
-    i++
-    j++
+    piv[0] = piv[0] + shift[adj] < 0 ? piv[0] - shift[adj] + 360 : piv[0] + shift[adj] > 359 ? piv[0] + shift[adj] - 360 : piv[0] + shift[adj]
+    console.log(shift[adj])
+    const newHsl = [...piv]
+    const name = hslToName(newHsl)
+    const hexName = hslToHex(newHsl)
+    const rgbName = hexToRgb(hexName)
+
+    updated.push({
+      hsl: newHsl,
+      name: name,
+      hexName: hexName,
+      rgbName: rgbName
+    })
+    adj++
   }
-  return arr
+  console.log(updated)
+
+  return {
+    count,
+    base,
+    scheme,
+    colors: updated,
+  }
 }
 
-const complementary = (base: any, count: any) => {
-  let i = 0, arr = [], piv = [...base], comp = piv[0] - 180 < 0 ? 360 + piv[0] - 180 : piv[0] - 180
-  while(i < count){
-    if(i % 2 == 0){
-      let s = randomNumber(-20,-1), l = randomNumber(-20,-1)
-      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
-      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
-      arr.push([piv[0], piv[1], piv[2]])
-    }else{
-      let s = randomNumber(-20,-1), l = randomNumber(-20,-1)
-      arr.push([comp, piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s, piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l])
-    }
-    i++
+const complementary = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+  const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
+  while(count < updated.length){
+    updated.pop()
   }
-  return arr
+  while(updated.length < count){
+    const comp = piv[0] - 180 < 0 ? 360 + piv[0] - 180 : piv[0] - 180
+    let s = randomNumber(-20,-1), l = randomNumber(-20,-1)
+    piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+    piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    piv[0] = comp
+
+    const newHsl = [...piv]
+    const name = hslToName(newHsl)
+    const hexName = hslToHex(newHsl)
+    const rgbName = hexToRgb(hexName)
+
+    updated.push({
+      hsl: newHsl,
+      name: name,
+      hexName: hexName,
+      rgbName: rgbName
+    })
+  }
+  
+  return {
+    count,
+    base,
+    scheme,
+    colors: updated,
+  }
 }
 
 const splitComplementary = (base: any, count: any) => {
