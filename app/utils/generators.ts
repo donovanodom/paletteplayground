@@ -100,7 +100,6 @@ const analogous = (base: Color, scheme: string, count: number, current: Colors =
     })
     adj++
   }
-  console.log(updated)
 
   return {
     count,
@@ -116,11 +115,11 @@ const complementary = (base: Color, scheme: string, count: number, current: Colo
     updated.pop()
   }
   while(updated.length < count){
-    const comp = piv[0] - 180 < 0 ? 360 + piv[0] - 180 : piv[0] - 180
+    const comp = piv[0] - 180 < 0 ? piv[0] + 180 : piv[0] - 180
     let s = randomNumber(-20,-1), l = randomNumber(-20,-1)
     piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
     piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
-    piv[0] = comp
+    if(updated.length % 2 == 0) piv[0] = comp
 
     const newHsl = [...piv]
     const name = hslToName(newHsl)
