@@ -32,7 +32,7 @@ const hexToRgb = (hex: string): string => {
 }
 
 export const generateBase = () => {
-  const hsl = [randomNumber(0, 360), randomNumber(20, 80), randomNumber(20, 80)]
+  const hsl = [randomNumber(0, 360), randomNumber(0, 100), randomNumber(0, 100)]
   const name = hslToName(hsl)
   const hexName = hslToHex(hsl)
   const rgbName = hexToRgb(hexName)
@@ -50,9 +50,11 @@ const monoChromatic = (base: Color, scheme: string, count: number, current: Colo
     updated.pop()
   }
   while(updated.length < count){
-    let s = randomNumber(-20,-1), l = randomNumber(-20,-1)
+    let h = randomNumber(-5,-1), s = randomNumber(-20,-1), l = randomNumber(-20,-1)
+    piv[0] = piv[0] + h < 5 ? randomNumber(1,5) : piv[0] + h
     piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
     piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+
     const newHsl = [...piv]
     const name = hslToName(newHsl)
     const hexName = hslToHex(newHsl)
@@ -86,7 +88,7 @@ const analogous = (base: Color, scheme: string, count: number, current: Colors =
     piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
     piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
     piv[0] = piv[0] + shift[adj] < 0 ? piv[0] - shift[adj] + 360 : piv[0] + shift[adj] > 359 ? piv[0] + shift[adj] - 360 : piv[0] + shift[adj]
-    console.log(shift[adj])
+
     const newHsl = [...piv]
     const name = hslToName(newHsl)
     const hexName = hslToHex(newHsl)
@@ -142,80 +144,134 @@ const complementary = (base: Color, scheme: string, count: number, current: Colo
   }
 }
 
-const splitComplementary = (base: any, count: any) => {
-  let i = 0, arr = [], piv = [...base], comp = piv[0] - 180 < 0 ? 360 + piv[0] - 180 : piv[0] - 180
-  while(i < count){
-    if(i % 2 == 0){
-      arr.push([piv[0], piv[1], piv[2]])
-    }else{
-      arr.push([comp, piv[1], piv[2]])
+const splitComplementary = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+  const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
+  while(count < updated.length){
+    updated.pop()
+  }
+  while(updated.length < count){
+    if(updated.length % 2 != 0){
+      const comp = piv[0] - 180 < 0 ? piv[0] + 180 : piv[0] - 180
       let s = randomNumber(-50,-30), l = randomNumber(-50,-30)
       piv[1] = piv[1] + s < 20 ? randomNumber(50,95) : piv[1] + s
       piv[2] = piv[2] + l < 20 ? randomNumber(50,95) : piv[2] + l
+      piv[0] = comp
     }
-    i++
+ 
+    const newHsl = [...piv]
+    const name = hslToName(newHsl)
+    const hexName = hslToHex(newHsl)
+    const rgbName = hexToRgb(hexName)
+
+    updated.push({
+      hsl: newHsl,
+      name: name,
+      hexName: hexName,
+      rgbName: rgbName
+    })
   }
-  return arr
+  
+  return {
+    count,
+    base,
+    scheme,
+    colors: updated,
+  }
 }
 
-const triadic = (base: any, count: any) => {
-  let 
-    i = 0, 
-    j = 0,
-    arr = [], 
-    piv = [...base], 
-    t1 = piv[0] - 120 < 0 ? 360 + piv[0] - 120 : piv[0] - 120, 
-    t2 = t1 - 120 < 0 ? 360 + t1 - 120 : t1 - 120, 
-    triad = ['first','second','third']
-  while(i < count){
-    if(j > 2) j = 0
-    if(triad[j] == 'first'){
-      arr.push([piv[0], piv[1], piv[2]])
-    }else if(triad[j] == 'second'){
-      let s = randomNumber(-20,1), l = randomNumber(-20,1)
-      arr.push([t1, piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s, piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l])
-    }else if(triad[j] == 'third'){
-      let s = randomNumber(-20,1), l = randomNumber(-20,1)
-      arr.push([t2, piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s, piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l])
+const triadic = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+  const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
+  const t1 = piv[0] - 120 < 0 ? 360 + piv[0] - 120 : piv[0] - 120, t2 = t1 - 120 < 0 ? 360 + t1 - 120 : t1 - 120
+  while(count < updated.length){
+    updated.pop()
+  }
+  while(updated.length < count){
+    let h = randomNumber(-5,-1), s = randomNumber(-20,1), l = randomNumber(-20,1), cur = randomNumber(1,3)
+    if(cur == 1){
+      piv[0] = t1 
+      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    }else if(cur == 2){
+      piv[0] = t2
+      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    }else{
+      piv[0] = piv[0] + h < 5 ? randomNumber(1,5) : piv[0] + h
       piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
       piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
     }
-    i++
-    j++
+ 
+    const newHsl = [...piv]
+    const name = hslToName(newHsl) 
+    const hexName = hslToHex(newHsl)
+    const rgbName = hexToRgb(hexName)
+
+    updated.push({
+      hsl: newHsl,
+      name: name,
+      hexName: hexName,
+      rgbName: rgbName
+    })
   }
-  return arr
+  
+  return {
+    count,
+    base,
+    scheme,
+    colors: updated,
+  }
 }
 
-const square = (base: any, count: any) => {
-  let 
-    i = 0, 
-    j = 0,
-    arr = [], 
-    piv = [...base], 
-    t1 = piv[0] - 90 < 0 ? 360 + piv[0] - 90 : piv[0] - 90, 
-    t2 = t1 - 90 < 0 ? 360 + t1 - 90 : t1 - 90, 
-    t3 = t2 - 90 < 0 ? 360 + t2 - 90 : t2 - 90, 
-    square = ['first','second','third','fourth']
-  while(i < count){
-    if(j > 3) j = 0
-    if(square[j] == 'first'){
-      arr.push([piv[0], piv[1], piv[2]])
-    }else if(square[j] == 'second'){
-      let s = randomNumber(-20,1), l = randomNumber(-20,1)
-      arr.push([t1, piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s, piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l])
-    }else if(square[j] == 'third'){
-      let s = randomNumber(-20,1), l = randomNumber(-20,1)
-      arr.push([t2, piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s, piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l])
-    }else if(square[j] == 'fourth'){
-      let s = randomNumber(-20,1), l = randomNumber(-20,1)
-      arr.push([t3, piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s, piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l])
+const square = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+  const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
+  const t1 = piv[0] - 90 < 0 ? 270 + piv[0]: piv[0] - 90, t2 = t1 - 90 < 0 ? 270 + t1 : t1 - 90, t3 = t2 - 90 < 0 ? 270 + t2 : t2 - 90
+  while(count < updated.length){
+    updated.pop()
+  }
+  while(updated.length < count){
+    let h = randomNumber(-5,-1), s = randomNumber(-20,1), l = randomNumber(-20,1), cur = randomNumber(1,4)
+    if(cur == 1){
+      piv[0] = t1 
+      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    }else if(cur == 2){
+      piv[0] = t2
+      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    }else if(cur == 3){
+      piv[0] = piv[0] + h < 5 ? randomNumber(1,5) : piv[0] + h
+      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    }else{
+      piv[0] = t3
       piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
       piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
     }
-    i++
-    j++
+ 
+    const newHsl = [...piv]
+    const name = hslToName(newHsl) 
+    const hexName = hslToHex(newHsl)
+    const rgbName = hexToRgb(hexName)
+
+    updated.push({
+      hsl: newHsl,
+      name: name,
+      hexName: hexName,
+      rgbName: rgbName
+    })
+
+    if(cur == 2){
+      piv[1] = piv[1] + s < 20 ? randomNumber(20,95) : piv[1] + s
+      piv[2] = piv[2] + l < 20 ? randomNumber(20,95) : piv[2] + l
+    }
   }
-  return arr
+  
+  return {
+    count,
+    base,
+    scheme,
+    colors: updated,
+  }
 }
 
 export const schemes: any = {

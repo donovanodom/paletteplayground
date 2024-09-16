@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface ColorProps {
   isDesktop: boolean;
@@ -7,16 +7,20 @@ interface ColorProps {
 
 const Color = ({isDesktop, color}: ColorProps) => {
 
-  const [toggleName, setToggelName] = useState<string>(color.name)
+  const [toggleName, setToggleName] = useState<string>('')
+
+  useEffect(() => {
+    setToggleName(color.name)
+  }, [color])
 
   const handleToggleName = () => {
     if(!isDesktop){
       if(toggleName == color.name){
-        setToggelName(color.hexName)
+        setToggleName(color.hexName)
       }else if(toggleName == color.hexName){
-        setToggelName(color.rgbName)
+        setToggleName(color.rgbName)
       }else{
-        setToggelName(color.name)
+        setToggleName(color.name)
       }
     }
   }

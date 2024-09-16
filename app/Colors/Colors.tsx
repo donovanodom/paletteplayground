@@ -37,7 +37,7 @@ const Colors = () => {
     if (event.code === "Enter" || event.code === "NumpadEnter" || event.code === "Space") {
       const newColors = schemes[colors.scheme](generateBase(), colors.scheme, colors.count)
       setColors((colors) => colors = newColors)
-
+      console.log(colors)
     }
     if (event.code === "ArrowUp" && colors.count < 8) {
       const newColors = schemes[colors.scheme](colors.base, colors.scheme, colors.count + 1, colors.colors)
