@@ -111,7 +111,7 @@ const analogous = (base: Color, scheme: string, count: number, current: Colors =
   }
 }
 
-const complementary = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+const complimentary = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
   const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
   while(count < updated.length){
     updated.pop()
@@ -144,7 +144,7 @@ const complementary = (base: Color, scheme: string, count: number, current: Colo
   }
 }
 
-const splitComplementary = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
+const splitComplimentary = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
   const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
   while(count < updated.length){
     updated.pop()
@@ -277,8 +277,8 @@ const square = (base: Color, scheme: string, count: number, current: Colors = []
 export const schemes: any = {
   'Monochromatic': monoChromatic,
   'Analogous': analogous,
-  'Complementary': complementary,
-  'Split Complementary': splitComplementary,
+  'Complimentary': complimentary,
+  'Split Complimentary': splitComplimentary,
   'Triadic': triadic,
   'Square': square
 };

@@ -133,8 +133,8 @@ export default Colors;
 
 // MonoChromatic - Same color, varying shades
 // Analogous - One main color, two adjacent colors
-// Complementary - Two colors directly across
-// Split Complementary
+// Complimentary - Two colors directly across
+// Split Complimentary
 // Triadic - 3 equally spaced colors
 // Tetradic - Rectangle, similar to square
 // Square - 4 equally spaced colors
