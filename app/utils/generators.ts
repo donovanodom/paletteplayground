@@ -44,6 +44,19 @@ export const generateBase = () => {
   }
 }
 
+function sortColors(colors: Color[]) {
+  return colors
+    .sort((colorA, colorB) => {
+      if (colorA.hsl[2] < colorB.hsl[2]) {
+        return -1;
+      } else if (colorA.hsl[2] > colorB.hsl[2]) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+}
+
 const monoChromatic = (base: Color, scheme: string, count: number, current: Colors = []): ColorsObject => {
   const updated: Colors = current.length ? [...current] : [base], piv = [...base.hsl]
   while(count < updated.length){
@@ -72,7 +85,7 @@ const monoChromatic = (base: Color, scheme: string, count: number, current: Colo
     count,
     base,
     scheme,
-    colors: updated,
+    colors: sortColors(updated),
   }
 }
 
@@ -107,7 +120,7 @@ const analogous = (base: Color, scheme: string, count: number, current: Colors =
     count,
     base,
     scheme,
-    colors: updated,
+    colors: sortColors(updated),
   }
 }
 
@@ -140,7 +153,7 @@ const complimentary = (base: Color, scheme: string, count: number, current: Colo
     count,
     base,
     scheme,
-    colors: updated,
+    colors: sortColors(updated),
   }
 }
 
@@ -152,12 +165,12 @@ const splitComplimentary = (base: Color, scheme: string, count: number, current:
   while(updated.length < count){
     if(updated.length % 2 != 0){
       const comp = piv[0] - 180 < 0 ? piv[0] + 180 : piv[0] - 180
-      let s = randomNumber(-50,-30), l = randomNumber(-50,-30)
-      piv[1] = piv[1] + s < 20 ? randomNumber(50,95) : piv[1] + s
-      piv[2] = piv[2] + l < 20 ? randomNumber(50,95) : piv[2] + l
       piv[0] = comp
     }
- 
+    let s = randomNumber(-50,-30), l = randomNumber(-50,-30)
+    piv[1] = piv[1] + s < 20 ? randomNumber(50,95) : piv[1] + s
+    piv[2] = piv[2] + l < 20 ? randomNumber(50,95) : piv[2] + l
+    
     const newHsl = [...piv]
     const name = hslToName(newHsl)
     const hexName = hslToHex(newHsl)
@@ -175,7 +188,7 @@ const splitComplimentary = (base: Color, scheme: string, count: number, current:
     count,
     base,
     scheme,
-    colors: updated,
+    colors: sortColors(updated),
   }
 }
 
@@ -218,7 +231,7 @@ const triadic = (base: Color, scheme: string, count: number, current: Colors = [
     count,
     base,
     scheme,
-    colors: updated,
+    colors: sortColors(updated),
   }
 }
 
@@ -270,7 +283,7 @@ const square = (base: Color, scheme: string, count: number, current: Colors = []
     count,
     base,
     scheme,
-    colors: updated,
+    colors: sortColors(updated),
   }
 }
 
